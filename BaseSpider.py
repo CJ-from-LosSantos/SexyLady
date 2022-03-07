@@ -1,6 +1,9 @@
 import os
+import time
 
 import requests
+from requests_cache import install_cache
+
 from lxml import etree
 from pymongo import MongoClient
 from loguru import logger
@@ -10,6 +13,7 @@ from pywchat import Sender
 class Spider:
 
     def __init__(self):
+        self.SPIDER_NAME = None
         self.BASE_URL = None
         self.METHOD = 'get'
         self.HEADERS = None
@@ -21,9 +25,13 @@ class Spider:
         self.LOG = logger
         self.TOKEN = None
 
-    def __init_response(self, mode='text', **kwargs):
+    def __init_response(self, hook_time, mode='text', **kwargs):
         try:
-            self.RESPONSE = requests.request(self.METHOD, self.BASE_URL, headers=self.HEADERS, **kwargs)
+            install_cache('%s_spider_session_cache' % self.SPIDER_NAME)
+            # requests_cache.clear()
+            session = requests.session()
+            session.hooks = {'response': self.make_throttle_hook(hook_time)}
+            self.RESPONSE = session.request(self.METHOD, self.BASE_URL, headers=self.HEADERS, **kwargs)
             self.RESPONSE.raise_for_status()
         except requests.HTTPError as e:
             raise requests.HTTPError('Error: %s & status_code== %d' % (e, self.RESPONSE.status_code))
@@ -34,11 +42,11 @@ class Spider:
         self.client = MongoClient('mongodb://{}:{}/'.format(self.IP, self.PORT))
         return self.client
 
-    def __init_logger(self, file_name):
+    def _init_logger(self, file_name):
         return self.LOG.add("%s_.log" % file_name, rotation="1 week", retention="10 days")
 
-    def _init_parser(self):
-        parser = etree.HTML(self.__init_response())
+    def _init_parser(self, hook_time=2):
+        parser = etree.HTML(self.__init_response(hook_time))
         self.XPATH = parser.xpath
 
     def wcs_text(self, message):
@@ -67,11 +75,21 @@ class Spider:
             res.append({key: value})
         return res
 
+    def private_response(self, mode, **kwargs):
+        return self.__init_response(mode=mode, **kwargs)
+
     # def private_mongodb(self):
     #     return self.__init_mongodb()
 
-    def private_response(self, mode, **kwargs):
-        return self.__init_response(mode=mode, **kwargs)
+    @staticmethod
+    def make_throttle_hook(timeout=0.1):
+        def hook(response, *args, **kwargs):
+            if not getattr(response, 'from_cache', False):
+                print(f'Not cache, So Wait {timeout} second...')
+                time.sleep(timeout)
+            return response
+
+        return hook
 
     @staticmethod
     def exit():
