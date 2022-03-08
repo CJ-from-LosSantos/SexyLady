@@ -1,4 +1,5 @@
 # 这是一个示例 Python 脚本。
+from conf.config import TOKEN
 from MiniObject import SexyRequest, SexyParser, MiniWeChatBot, ML, make_logfile
 
 
@@ -23,16 +24,18 @@ class BaiDu(SexyRequest):
         parser = SexyParser()
         try:
             # 这是错误的例子
-            # result['hot_search'] = parser.inn('//*[@class="title-cont——？？？？"]/text()', self.xpath, _raise=True)
-            result['hot_search'] = parser.inn('//*[@class="title-content-title"]/text()', self.xpath, _raise=True)
+            result['hot_search'] = parser.inn('//*[@class="title-cont——？？？？"]/text()', self.xpath, _raise=True)
+            # result['hot_search'] = parser.inn('//*[@class="title-content-title"]/text()', self.xpath, _raise=True)
         except:
             ML.exception("这里发生了什么")
         finally:
             print('result:: ', result)
             self.client.close()
+            # app.wcs_file('这是测试用例_.log')
 
 
 if __name__ == '__main__':
     make_logfile('这是测试用例')
+    # app = MiniWeChatBot(TOKEN)
     P = BaiDu()
     P.set_spider()
