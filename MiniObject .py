@@ -10,7 +10,7 @@ from loguru import logger
 from pywchat import Sender
 
 
-class Spider:
+class MiniSpider:
 
     def __init__(self):
         self.SPIDER_NAME = None
@@ -23,7 +23,6 @@ class Spider:
         self.PORT = None
         self.client = None
         self.LOG = logger
-        self.TOKEN = None
 
     def __init_response(self, hook_time, mode='text', **kwargs):
         try:
@@ -48,18 +47,6 @@ class Spider:
     def _init_parser(self, hook_time=2):
         parser = etree.HTML(self.__init_response(hook_time))
         self.XPATH = parser.xpath
-
-    def wcs_text(self, message):
-        app = Sender(self.TOKEN)
-        app.send_text(message)
-
-    def wcs_image(self, path):
-        app = Sender(self.TOKEN)
-        app.send_image(path)
-
-    def wcs_file(self, path):
-        app = Sender(self.TOKEN)
-        app.send_file(path)
 
     def insert_many(self, cars, database='test', cars_name='test'):
         _ = self.__init_mongodb()
@@ -94,3 +81,18 @@ class Spider:
     @staticmethod
     def exit():
         os._exit(1)
+
+
+class MiniWeChatBot:
+
+    def __init__(self, token):
+        self.app = Sender(token)
+
+    def wcs_text(self, message):
+        self.app.send_text(message)
+
+    def wcs_image(self, path):
+        self.app.send_image(path)
+
+    def wcs_file(self, path):
+        self.app.send_file(path)
