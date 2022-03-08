@@ -4,8 +4,7 @@ from loguru import logger
 from lxml import etree
 from pywchat import Sender
 
-
-ml = logger
+ML = logger
 
 
 def make_logfile(file_name, rotation="1 week", retention="10 days"):
@@ -13,7 +12,7 @@ def make_logfile(file_name, rotation="1 week", retention="10 days"):
     简单的初始化log的文件
     使用帮助: https://pythondict.com/life-intelligent/tools/loguru/
     """
-    return ml.add("%s_.log" % file_name, rotation=rotation, retention=retention)
+    return ML.add("%s_.log" % file_name, rotation=rotation, retention=retention)
 
 
 def raise_on_4xx_5xx(response):
@@ -23,7 +22,7 @@ def raise_on_4xx_5xx(response):
     try:
         response.raise_for_status()
     except HTTPStatusError as e:
-        ml.warning('MyError: %s & status_code== %d' % (e, response.status_code))
+        ML.warning('MyError: %s & status_code== %d' % (e, response.status_code))
 
 
 class SexyRequest:
@@ -71,10 +70,20 @@ class SexyParser:
         return parser.xpath
 
     def inn(self, source, xpath: classmethod = None, _raise=False):
+        """
+        用例编写:
+            parser = SexyParser()
+            result['hot_search'] = parser.inn('//*[@class="title-content-title"]/text()', self.xpath, _raise=True)
+
+        :param source: xpath 语句
+        :param xpath: method
+        :param _raise: 异常开关
+        :return:
+        """
         if _raise and not xpath(source):
             raise ValueError('执行xpath(%s)为空' % source)
         elif not _raise and not xpath(source):
-            print('Warning: < source: %s > = None ' % source)
+            ML.warning('xpath语句可能有问题: < source: %s > = None ' % source)
         else:
             return xpath(source)
 
@@ -82,10 +91,10 @@ class SexyParser:
 class MiniWeChatBot:
     """
     用例编写:
-            token = (corpid, corpsecret, agentid)
-            app = MiniWeChatBot(TOKEN)
-            app.wcs_text("is test message...")
-            ...
+        token = (corpid, corpsecret, agentid)
+        app = MiniWeChatBot(TOKEN)
+        app.wcs_text("is test message...")
+        ...
     """
 
     def __init__(self, token):
