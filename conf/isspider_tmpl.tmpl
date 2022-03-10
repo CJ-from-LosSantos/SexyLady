@@ -1,0 +1,34 @@
+import SexyLady
+from conf.config import TOKEN
+from tools.LogGenerator import make_logfile, ML
+from tools.TaskGenerator import async_run_loop
+
+
+class SN:
+
+    def __init__(self):
+        """
+        Want to pass a list like this: self.urls = ['links_1', 'links_2']
+        your tasks are not many. You can also do this: self.urls = 'link'
+        """
+        self.urls = "do something"
+
+    def set_spider(self):
+        try:
+            tasks = SexyLady.Request(urls=self.urls, is_async=True).builder()
+            response = async_run_loop(tasks)
+        except:
+            ML.exception('ERROR Snapshot')
+        finally:
+            app.wcs_file('is_test_.log')
+
+
+if __name__ == '__main__':
+    """
+    You can initialize your log file
+    You can get the activated app, which can automatically send some customized messages or files to your wechat
+    Please check the picture under the conf file for details
+    """
+    make_logfile('is_test')
+    app = SexyLady.MiniWeChatBot(TOKEN)
+    SN().set_spider()
