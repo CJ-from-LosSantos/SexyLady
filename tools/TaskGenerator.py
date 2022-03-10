@@ -21,6 +21,11 @@ def generate_task(_function, urls: list) -> list:
 
 
 def async_run_loop(tasks):
+    """
+    可以简单的调用该方法就可以启动异步的程序
+    :param tasks: 任务列表
+    :return: 返回任务结果
+    """
     loop = asyncio.get_event_loop()
     end_tasks = asyncio.gather(*tasks)
     return loop.run_until_complete(end_tasks)
