@@ -1,0 +1,19 @@
+class Parser:
+    """
+    requests_html is encapsulated here. For details, you can move to:
+        https://github.com/kennethreitz/requests-html;
+        https://pypi.org/project/requests-html/
+
+    @:param methodname: Select the parsing method you need to use
+    """
+    methodname = 'xpath'
+
+    def __init__(self, html):
+        self.html = html
+
+    def parser_source(self):
+        """
+        Show your cleaning data here, like this:
+            info = self.html('//*[@id="articleContentId"]/text()')
+        """
+        pass
