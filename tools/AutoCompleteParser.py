@@ -1,6 +1,5 @@
 from lxml import etree
 from pyquery import PyQuery as pq
-
 from set_parser import Parser
 
 
@@ -27,12 +26,3 @@ class Auto:
         elif Parser.methodname == 'pq':
             Parser().parser_source(pq(self._lxml))
 
-# class Auto(BaseParser):
-#
-#     def __init__(self, *, element, url: _URL):
-#         super().__init__(element=element, url=url)
-#
-#     def c(self):
-#         HTML(html='')
-#         # hot = self.xpath('//*[@id="articleContentId"]/text()')
-#         # print(hot)

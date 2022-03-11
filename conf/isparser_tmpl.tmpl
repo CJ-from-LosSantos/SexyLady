@@ -1,5 +1,4 @@
 import SexyLady
-from pyquery import PyQuery
 from tools.LogGenerator import *
 
 
@@ -13,10 +12,10 @@ class Parser:
     """
     methodname = 'xpath'
 
-    def parser_source(self, p: [classmethod, PyQuery]):
+    def parser_source(self, p):
         """
         Show your cleaning data here, like this:
-            info = self.html('//*[@id="articleContentId"]/text()')
+            info = p('//*[@id="articleContentId"]/text()')
         """
         pass
 
@@ -26,4 +25,4 @@ if __name__ == '__main__':
     make_logfile('is_test')
 
     ML.info('Start running...')
-    SexyLady.callback('you spider name')
+    SexyLady.callback('Tell me who he is')
