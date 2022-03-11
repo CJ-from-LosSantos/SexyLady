@@ -29,6 +29,6 @@ def tmpl_init(d: dict):
 
 
 if __name__ == '__main__':
-    tmpl = {"isparser_tmpl.tmpl": "parser_conf_test.py", "isspider_tmpl.tmpl": "spider_test.py"}
+    tmpl = {"isparser_tmpl.tmpl": "set_parser.py", "isspider_tmpl.tmpl": "set_spider.py"}
     tmpl_init(tmpl)
     print('Create template successfully')
