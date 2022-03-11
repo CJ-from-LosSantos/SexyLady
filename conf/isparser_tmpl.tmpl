@@ -1,3 +1,8 @@
+import SexyLady
+from pyquery import PyQuery
+from tools.LogGenerator import *
+
+
 class Parser:
     """
     requests_html is encapsulated here. For details, you can move to:
@@ -8,12 +13,17 @@ class Parser:
     """
     methodname = 'xpath'
 
-    def __init__(self, html):
-        self.html = html
-
-    def parser_source(self):
+    def parser_source(self, p: [classmethod, PyQuery]):
         """
         Show your cleaning data here, like this:
             info = self.html('//*[@id="articleContentId"]/text()')
         """
         pass
+
+
+if __name__ == '__main__':
+    #  You can initialize your log file
+    make_logfile('is_test')
+
+    ML.info('Start running...')
+    SexyLady.callback('you spider name')
