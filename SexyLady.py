@@ -1,4 +1,5 @@
 import httpx
+import set_spider
 from faker import Factory
 from pywchat import Sender
 from tools.LogGenerator import ML
@@ -6,16 +7,18 @@ from tools.AutoCompleteParser import Auto
 from tools.TaskGenerator import generate_async_task, generate_task
 
 
+def callback(set_spider_name):
+    NAME = set_spider_name
+    getattr(set_spider, NAME)().set_spider()
+
+
 class AsyncClient:
     """
     返回异步客户端
     """
 
-    def __init__(self, **kwargs):
-        self.data = kwargs
-
-    def __repr__(self):
-        return httpx.AsyncClient(**self.data)
+    def __call__(self, *args, **kwargs):
+        return httpx.AsyncClient(**kwargs)
 
 
 class Client:
@@ -23,11 +26,8 @@ class Client:
     返回普通客户端
     """
 
-    def __init__(self, **kwargs):
-        self.data = kwargs
-
-    def __repr__(self):
-        return httpx.Client(**self.data)
+    def __call__(self, *args, **kwargs):
+        return httpx.Client(**kwargs)
 
 
 class Request:
@@ -41,7 +41,7 @@ class Request:
         self.urls = urls
         self.methode = methode
         self.is_async = is_async
-        self.client = AsyncClient(**kwargs).__repr__() if is_async else Client(**kwargs).__repr__()
+        self.client = AsyncClient().__call__(**kwargs) if is_async else Client().__call__(**kwargs)
         self.result = [self.methode, self.urls]
 
         self.content = content
@@ -65,25 +65,34 @@ class Request:
             auth=self.auth, follow_redirects=self.follow_redirects,
             timeout=self.timeout, extensions=self.extensions,
         )
-        # Auto(response).pending()
+        await Auto(response).async_call()
         ML.info('End of request %s, %s, FROM %s' % (url, response, self.client))
         return response
 
     def out_response(self, url):
-        response = self.client.request(
-            method=self.methode, url=url,
-            content=self.content, data=self.data,
-            json=self.json, params=self.params,
-            headers=self.headers, cookies=self.cookies,
-            auth=self.auth, follow_redirects=self.follow_redirects,
-            timeout=self.timeout, extensions=self.extensions,
-        )
-        ML.info('End of request %s, %s, FROM %s' % (self.urls, response, self.client))
-        return response
+        try:
+            response = self.client.request(
+                method=self.methode, url=url,
+                content=self.content, data=self.data,
+                json=self.json, params=self.params,
+                headers=self.headers, cookies=self.cookies,
+                auth=self.auth, follow_redirects=self.follow_redirects,
+                timeout=self.timeout, extensions=self.extensions,
+            )
+            Auto(response).commonly_call()
+            ML.info('End of request %s, %s, FROM %s' % (self.urls, response, self.client))
+            return response
+        except Exception as e:
+            print(e)
+        finally:
+            self.client.close()
 
-    def diluent(self):
-        # 解析urls列表并且传入到请求中
-        # 是列表+是异步；是列表+不是异步；不是列表+是异步；不是列表+不是异步
+    def builder(self):
+        """
+        解析 urls列表 并且传入到请求中 \
+        是列表+是异步；是列表+不是异步；不是列表+是异步；不是列表+不是异步
+        :return: 异步模式下返回任务列表，单例下是 response
+        """
         if isinstance(self.urls, list) and self.is_async:
             return generate_async_task(self.async_out_response, self.urls)
         elif isinstance(self.urls, list) and not self.is_async:
@@ -94,15 +103,6 @@ class Request:
             return generate_task(self.out_response, [self.urls])
         else:
             pass
-
-
-# async def main(self):
-#     async with httpx.AsyncClient() as P:
-#         resp = await P.request('http://httpbin.org/get')
-#         result = resp.json()
-#         print(result)
-#
-# asyncio.run(main())
 
 
 # class SexyRequest(Engine):
