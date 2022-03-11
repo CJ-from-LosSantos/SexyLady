@@ -8,8 +8,11 @@ from tools.TaskGenerator import generate_async_task, generate_task
 
 
 def callback(set_spider_name):
-    NAME = set_spider_name
-    getattr(set_spider, NAME)().set_spider()
+    try:
+        NAME = set_spider_name
+        getattr(set_spider, NAME)().set_spider()
+    except AttributeError:
+        ML.warning('Bad task name: < %s >' % set_spider_name)
 
 
 class AsyncClient:
@@ -104,28 +107,6 @@ class Request:
         else:
             pass
 
-
-# class SexyRequest(Engine):
-#
-#     def request(self):
-#         httpx.request()
-
-
-# class SexyResponse(Engine):
-#
-#     def response(self):
-#         httpx.request(
-#             self.html, self.urls, params=self.params,
-#             content=self.content, data=self.data,
-#             files=self.files, json=self.json,
-#             headers=self.headers, cookies=self.cookies,
-#             auth=self.auth, proxies=,
-#             timeout=self.timeout, follow_redirects=self.follow_redirects,
-#             verify=,cert=,trust_env=,
-#
-#             extensions=self.extensions,
-#         )
-#
 #
 # class SexyParser:
 #
