@@ -1,5 +1,5 @@
-import SexyLady
-from tools.LogGenerator import *
+from tools.LogGenerator import ML, make_logfile
+from tools.TaskGenerator import upload_task
 
 
 class Parser:
@@ -8,9 +8,13 @@ class Parser:
         https://github.com/kennethreitz/requests-html;
         https://pypi.org/project/requests-html/
 
+    @:param spider_tmplName: The className of the corresponding crawler template, from < set_spiders.py >
+    @:param url: Target website
     @:param methodname: Select the parsing method you need to use
     """
-    methodname = 'xpath'
+    spider_tmplName = None
+    methodname = "xpath"
+    url = "you crawled url"
 
     def parser_source(self, p):
         """
@@ -25,4 +29,4 @@ if __name__ == '__main__':
     make_logfile('is_test')
 
     ML.info('Start running...')
-    SexyLady.callback('Tell me who he is')
+    upload_task(tmplName=Parser.spider_tmplName, taskUrl=Parser.url)
