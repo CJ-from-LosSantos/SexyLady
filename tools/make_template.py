@@ -5,7 +5,7 @@ def tmpl_init(d: dict):
     # filePath = '../parser_conf_test.py'
 
     for k, v in d.items():
-        filePath = '../' + v
+        filePath = '../tmpl/' + v
         class_file = open(filePath, 'w')
 
         mycode = []
@@ -29,6 +29,6 @@ def tmpl_init(d: dict):
 
 
 if __name__ == '__main__':
-    tmpl = {"isparser_tmpl.tmpl": "set_parser.py", "isspider_tmpl.tmpl": "set_spider.py"}
+    tmpl = {"isparser_tmpl.tmpl": "set_parser.py", "isspider_tmpl.tmpl": "set_spiders.py"}
     tmpl_init(tmpl)
     print('Create template successfully')
