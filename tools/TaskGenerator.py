@@ -7,7 +7,7 @@ from redis import StrictRedis
 
 def upload_task(tmplName=None, taskUrl=None):
     """
-    负责上传 url 和对应爬虫模板的 ”set_spider.py中的类名“ 到 redis 中
+    负责上传 url 和对应爬虫模板的 ”set_spiders.py中的类名“ 到 redis 中
     :param tmplName: 对应爬虫模板的类名，用户如果没有传递则获取所有爬虫模板下的所有类名
     :param taskUrl: 任务url
     :return:
@@ -49,6 +49,10 @@ def upload_task(tmplName=None, taskUrl=None):
     ML.debug('Task list: %s exists' % {'Field': fail})
 
     return 1
+
+
+def get_task():
+    pass
 
 
 def generate_async_task(async_function, urls: list) -> list:
