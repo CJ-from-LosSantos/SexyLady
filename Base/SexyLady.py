@@ -1,18 +1,10 @@
+import asyncio
 import httpx
-import set_spider
 from faker import Factory
+from httpx import Response
 from pywchat import Sender
 from tools.LogGenerator import ML
-from tools.AutoCompleteParser import Auto
-from tools.TaskGenerator import generate_async_task, generate_task
-
-
-def callback(set_spider_name):
-    try:
-        NAME = set_spider_name
-        getattr(set_spider, NAME)().set_spider()
-    except AttributeError:
-        ML.warning('Bad task name: < %s >' % set_spider_name)
+# from tools.TaskEngin import generate_async_task, generate_task
 
 
 class AsyncClient:
@@ -59,7 +51,7 @@ class Request:
         self.timeout = timeout
         self.extensions = extensions
 
-    async def async_out_response(self, url):
+    async def async_out_response(self, url) -> Response:
         response = await self.client.request(
             method=self.methode, url=url,
             content=self.content, data=self.data,
@@ -68,11 +60,11 @@ class Request:
             auth=self.auth, follow_redirects=self.follow_redirects,
             timeout=self.timeout, extensions=self.extensions,
         )
-        await Auto(response).async_call()
-        ML.info('End of request %s, %s, FROM %s' % (url, response, self.client))
+        # await Auto(response).async_call()
+        ML.debug('End of request %s, %s, FROM %s' % (url, response, self.client))
         return response
 
-    def out_response(self, url):
+    def out_response(self, url) -> Response:
         try:
             response = self.client.request(
                 method=self.methode, url=url,
@@ -82,58 +74,31 @@ class Request:
                 auth=self.auth, follow_redirects=self.follow_redirects,
                 timeout=self.timeout, extensions=self.extensions,
             )
-            Auto(response).commonly_call()
-            ML.info('End of request %s, %s, FROM %s' % (self.urls, response, self.client))
+            # Auto(response).commonly_call()
+            ML.debug('End of request %s, %s, FROM %s' % (self.urls, response, self.client))
             return response
         except Exception as e:
             print(e)
         finally:
             self.client.close()
 
+    @property
     def builder(self):
         """
         解析 urls列表 并且传入到请求中 \
         是列表+是异步；是列表+不是异步；不是列表+是异步；不是列表+不是异步
         :return: 异步模式下返回任务列表，单例下是 response
         """
-        if isinstance(self.urls, list) and self.is_async:
-            return generate_async_task(self.async_out_response, self.urls)
-        elif isinstance(self.urls, list) and not self.is_async:
-            return generate_task(self.out_response, self.urls)
-        elif isinstance(self.urls, str) and self.is_async:
-            return generate_async_task(self.async_out_response, [self.urls])
-        elif isinstance(self.urls, str) and not self.is_async:
-            return generate_task(self.out_response, [self.urls])
+        if not (not isinstance(self.urls, list) or not self.is_async):
+            return [asyncio.ensure_future(self.async_out_response(url)) for url in self.urls]
+        elif not (not isinstance(self.urls, list) or self.is_async):
+            return [self.out_response(url) for url in self.urls]
+        elif not (not isinstance(self.urls, str) or not self.is_async):
+            return [asyncio.ensure_future(self.async_out_response(self.urls))]
+        elif not (not isinstance(self.urls, str) or self.is_async):
+            return [self.out_response(self.urls)]
         else:
             pass
-
-#
-# class SexyParser:
-#
-#     def __init__(self):
-#         self.xpath = None
-#
-#     def exec_xpath(self, response):
-#         parser = etree.HTML(response)
-#         return parser.xpath
-#
-#     def inn(self, source, xpath: classmethod = None, _raise=False):
-#         """
-#         用例编写:
-#             parser = SexyParser()
-#             result['hot_search'] = parser.inn('//*[@class="title-content-title"]/text()', self.xpath, _raise=True)
-#
-#         :param source: xpath 语句
-#         :param xpath: html
-#         :param _raise: 异常开关
-#         :return:
-#         """
-#         if _raise and not xpath(source):
-#             raise ValueError('执行xpath(%s)为空' % source)
-#         elif not _raise and not xpath(source):
-#             ML.warning('xpath语句可能有问题: < source: %s > = None ' % source)
-#         else:
-#             return xpath(source)
 
 
 class MiniWeChatBot:
