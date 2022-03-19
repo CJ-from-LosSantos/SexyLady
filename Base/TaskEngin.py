@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from tmpl import set_spiders
 from tools.LogGenerator import ML
 from collections import namedtuple
-from tools.RequestTool import RequestTool
+from Base.RequestTool import RequestTool
 
 TaskStatus = namedtuple('TaskStatus', 'no_start, finish, err')
 TASK_STATUS = TaskStatus(0, 1, 2)
@@ -60,11 +60,13 @@ async def start_task(DATABASE, TABLE):
             _url = task['url']
             _async = task['async']
 
-            _class = getattr(set_spiders, _name)(_name, _url, _async)
-            obj = RequestTool(_class.set_spider, data=task)
-
-            res = await obj.async_call()
-            ML.info('Temporary display data: %s' % res)
+            try:
+                _class = getattr(set_spiders, _name)(_name, _url, _async)
+                obj = RequestTool(_class.set_spider, data=task)
+                res = await obj.async_call()
+                ML.info('Temporary display data: %s' % res)
+            except AttributeError:
+                ML.warning('Check whether you have configured the spider template: %s' % _name)
 
 
 def get_task():
