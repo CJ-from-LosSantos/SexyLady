@@ -1,0 +1,48 @@
+from Base import SexyLady
+from tools.LogGenerator import *
+
+
+class Spider1:
+
+    def __init__(self, name, urls, _async):
+        if self.__class__.__name__ != name:
+            raise ValueError('WTF is different')
+        self.urls = urls
+        self._async = _async
+
+    @property
+    def set_spider(self):
+        """
+        在这里掌控你的蜘蛛，告诉它如何得到正确的响应
+        如果你想使用微信机器人，您可以先查看conf文件夹里的图片
+        Take control of your spider here and tell it how to get the right response
+        You can get the activated app, which can automatically send some customized messages or files to your wechat
+        Please check the picture under the conf file for details
+        """
+        # app = SexyLady.MiniWeChatBot(TOKEN)
+        ML.debug('Calling %s %s file' % (__file__.split('\\')[-1], self.__class__.__name__))
+        try:
+            return iter(SexyLady.Request(urls=self.urls, is_async=self._async).builder)
+        except:
+            ML.exception('ERROR Snapshot')
+        finally:
+            pass
+            # app.wcs_file('is_test_.log')
+
+
+class Spider2:
+
+    def __init__(self, name, urls, _async):
+        if self.__class__.__name__ != name:
+            raise ValueError('WTF is different')
+        self.urls = urls
+        self._async = _async
+
+
+class Spider3:
+
+    def __init__(self, name, urls, _async):
+        if self.__class__.__name__ != name:
+            raise ValueError('WTF is different')
+        self.urls = urls
+        self._async = _async

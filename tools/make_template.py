@@ -6,13 +6,13 @@ def tmpl_init(d: dict):
 
     for k, v in d.items():
         filePath = '../tmpl/' + v
-        class_file = open(filePath, 'w')
+        class_file = open(filePath, 'w', encoding='utf-8')
 
         mycode = []
 
         # 加载模板文件
         # template_file = open('../conf/isparser_tmpl.tmpl', 'r')
-        template_file = open('../conf/' + k, 'r')
+        template_file = open('../conf/' + k, 'r', encoding='utf-8')
         tmpl = Template(template_file.read())
 
         # 模板替换
@@ -29,6 +29,6 @@ def tmpl_init(d: dict):
 
 
 if __name__ == '__main__':
-    tmpl = {"isparser_tmpl.tmpl": "set_parser.py", "isspider_tmpl.tmpl": "set_spiders.py"}
+    tmpl = {"isyaml.tmpl": "first_job.yaml", "isspider.tmpl": "set_spiders.py"}
     tmpl_init(tmpl)
     print('Create template successfully')
