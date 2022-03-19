@@ -77,8 +77,8 @@
        #  You can initialize your log file
        make_logfile('is_test')
    
-       ML.info('Start running...')
-       SexyLady.callback('SN')  # Class name corresponding to set_spider.py
+       ML.debug('Start running...')
+       SexyLady.callback()  # Class name corresponding to set_spider.py
    ```
 
    在 `SexyLady.callback('')` 中，你需要把 set_spider.py 中的类名告诉她，她才知道加载这份爬虫配置文件👌。
