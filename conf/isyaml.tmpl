@@ -1,0 +1,23 @@
+name: SouHu
+url: https://pypi.org/
+async: False
+type: text
+parser: xpath
+database:
+  user:
+  password:
+  ip: localhost
+  port: 27017
+  DatabaseName: job
+  TableName: task_table
+insert:
+  user:
+  password:
+  ip: localhost
+  port: 27017
+  DatabaseName: data
+  TableName: info_table
+field:
+  - title
+rule:
+  - //*[@type="title"]/text()
