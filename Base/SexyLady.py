@@ -3,8 +3,7 @@ import httpx
 from faker import Factory
 from httpx import Response
 from pywchat import Sender
-from tools.LogGenerator import ML
-# from tools.TaskEngin import generate_async_task, generate_task
+from Base.Tools import ML
 
 
 class AsyncClient:
@@ -78,7 +77,7 @@ class Request:
             ML.debug('End of request %s, %s, FROM %s' % (self.urls, response, self.client))
             return response
         except Exception as e:
-            print(e)
+            ML.error(e)
         finally:
             self.client.close()
 
