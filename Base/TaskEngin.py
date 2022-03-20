@@ -42,7 +42,7 @@ def upload_task(paths: list = None):
             if exec_client_action(dataName, tableName, 'insert_many', fields, _CLIENT):
                 ML.debug('Task list insertion complete')
         except UnboundLocalError:
-            ML.warning('Check you mongo user and password')
+            ML.error("Check you mongo 'user' or 'password'")
 
 
 async def start_task(DATABASE, TABLE):
@@ -54,18 +54,24 @@ async def start_task(DATABASE, TABLE):
     )
     # _name, _url, _async, _type = [], [], [], []
     for task in result:
-        if task['status'] == TASK_STATUS.no_start:
-            _name = task['name']
-            _url = task['url']
-            _async = task['async']
+        try:
+            if task['status'] == TASK_STATUS.no_start:
+                _name = task['name']
+                _url = task['url']
+                _async = task['async']
 
-            try:
-                _class = getattr(set_spiders, _name)(_name, _url, _async)
-                obj = RequestTool(_class.set_spider, data=task)
-                res = await obj.async_call()
-                ML.info('Temporary display data: %s' % res)
-            except AttributeError:
-                ML.warning('Check whether you have configured the spider template: %s' % _name)
+                func_entry = task['entry'] or 'set_spider'
+
+                try:
+                    _class = getattr(set_spiders, _name)(_name, _url, _async)
+                    r = getattr(_class, func_entry)
+                    obj = RequestTool(r, data=task)
+                    res = await obj.async_call()
+                    ML.info('output info: %s' % res)
+                except AttributeError as e:
+                    ML.error('Check spider template: %s' % e)
+        except KeyError as e:
+            ML.error('Check yaml file fields: %s, FROM <%s>' % (e, task['url']))
 
 
 def get_task():
