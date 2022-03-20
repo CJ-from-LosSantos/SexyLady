@@ -1,7 +1,7 @@
 import inspect
 from lxml import etree
 from httpx import HTTPStatusError
-from tools.LogGenerator import ML
+from loguru import logger
 
 
 # from pyquery import PyQuery as pq
@@ -13,6 +13,23 @@ def callback():
     classes = []
     for (name, _) in clsmembers:
         classes.append(name)
+
+
+class Loggings:
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.__instance:
+            cls.__instance = super(Loggings, cls).__new__(cls, *args, **kwargs)
+
+        return cls.__instance
+
+    @staticmethod
+    def init_logger():
+        return logger
+
+
+ML = Loggings().init_logger()
 
 
 class RequestTool:
