@@ -3,9 +3,8 @@ import jmespath as jmp
 from ruamel import yaml
 from pymongo import MongoClient
 from tmpl import set_spiders
-from tools.LogGenerator import ML
 from collections import namedtuple
-from Base.RequestTool import RequestTool
+from Base.Tools import RequestTool, ML
 
 TaskStatus = namedtuple('TaskStatus', 'no_start, finish, err')
 TASK_STATUS = TaskStatus(0, 1, 2)
@@ -94,6 +93,6 @@ def exec_client_action(DATA, TABLE, ACTION, VALUES=None, CLIENT='mongodb://local
                 return getattr(cars, ACTION)(VALUES)
             return getattr(cars, ACTION)(*VALUES)
         return getattr(cars, ACTION)()
-    except Exception:
-        ML.exception('err')
+    except Exception as e:
+        ML.error(e)
         return False
